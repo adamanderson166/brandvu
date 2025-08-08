@@ -245,3 +245,11 @@ Mock data labeling:
 
 ## Executive Overview
 See the executive summary of BrandView MVP integration in `docs/EXEC_OVERVIEW.md`. 
+
+## Next Phase (MVP)
+- Data Tracker (flag: `REACT_APP_BRANDVIEW_DATA_TRACKER_MVP`)
+  - Normalized real-time metrics across platforms, snapshot history, actionable suggestions.
+- Email Management (flag: `REACT_APP_BRANDVIEW_EMAIL_MVP`)
+  - Build/send outreach campaigns, engagement analytics (opens/clicks/replies), contact lists & compliance.
+
+These features will integrate into BrandView and run behind feature flags for controlled rollout. 

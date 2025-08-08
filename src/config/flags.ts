@@ -13,6 +13,10 @@ function readBool(envVar: string | undefined, defaultValue = false): boolean {
 
 export const flags = {
   BRANDVIEW_MVP: readBool(process.env.REACT_APP_BRANDVIEW_MVP, false),
+  // Next-phase flags
+  BRANDVIEW_DATA_TRACKER_MVP: readBool(process.env.REACT_APP_BRANDVIEW_DATA_TRACKER_MVP, false),
+  BRANDVIEW_EMAIL_MVP: readBool(process.env.REACT_APP_BRANDVIEW_EMAIL_MVP, false),
+
   CONNECTORS: {
     INSTAGRAM_ENABLE: readBool(process.env.REACT_APP_INSTAGRAM_ENABLE, true),
     TIKTOK_ENABLE: readBool(process.env.REACT_APP_TIKTOK_ENABLE, true),
@@ -24,5 +28,5 @@ export const flags = {
 };
 
 export const docs = {
-  howToEnable: 'Set REACT_APP_BRANDVIEW_MVP=true in your environment to enable BrandView routes and UI.',
+  howToEnable: 'Set REACT_APP_BRANDVIEW_MVP=true to enable BrandView routes and UI. Next phase flags: REACT_APP_BRANDVIEW_DATA_TRACKER_MVP and REACT_APP_BRANDVIEW_EMAIL_MVP.',
 };

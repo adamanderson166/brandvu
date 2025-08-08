@@ -55,3 +55,17 @@ Integrate the BrandView MVP into our existing platform to enable brands and crea
 - Positions platform as a trusted bridge between brands and creators with measurable outcomes.
 - Differentiates through integrated training and performance scoring, not just matchmaking.
 - Creates a scalable foundation for Phase 2 features (private insights, advanced AI recommendations, campaign management).
+
+### Next Phase – MVP Data Tracker & Email Management System
+- **Data Tracker (MVP)**
+  - View normalized, real-time performance metrics across connected social platforms.
+  - Track progress over time via stored metric snapshots.
+  - Surface actionable suggestions to improve profile health and engagement.
+  - Gated by `REACT_APP_BRANDVIEW_DATA_TRACKER_MVP`.
+- **Email Management System (MVP)**
+  - Build and send outreach campaigns directly from BrandView.
+  - Track engagement (opens, clicks, replies) feeding analytics into the Data Tracker.
+  - Manage contact lists and maintain compliance requirements.
+  - Gated by `REACT_APP_BRANDVIEW_EMAIL_MVP`.
+
+Both features integrate into the existing BrandView experience and operate behind feature flags for controlled rollout and testing.
