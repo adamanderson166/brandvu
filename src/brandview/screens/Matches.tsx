@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 type ShortlistEntry = { id: string; note: string; addedAt: number };
 
@@ -14,15 +14,18 @@ const Matches: React.FC = () => {
   const shortlist: ShortlistEntry[] = s.shortlist || [];
 
   const messagesKey = (id: string) => `chat_${id}`;
-  const getMessages = (id: string): ChatMessage[] => s[messagesKey(id)] || [];
+  const getMessages = (id: string): ChatMessage[] => (s[messagesKey(id)] as ChatMessage[]) || [];
   const setMessages = (id: string, msgs: ChatMessage[]) => { s[messagesKey(id)] = msgs; };
 
   const [draft, setDraft] = useState('');
-  const msgs = useMemo(() => (selectedId ? getMessages(selectedId) : []), [selectedId]);
+  const msgs: ChatMessage[] = selectedId ? getMessages(selectedId) : [];
 
   const send = () => {
     if (!selectedId || !draft.trim()) return;
-    const next = [...getMessages(selectedId), { from: 'brand', text: draft.trim(), ts: Date.now() }];
+    const next: ChatMessage[] = [
+      ...getMessages(selectedId),
+      { from: 'brand' as const, text: draft.trim(), ts: Date.now() },
+    ];
     setMessages(selectedId, next);
     setDraft('');
   };
@@ -54,7 +57,7 @@ const Matches: React.FC = () => {
               <div className="flex-1 overflow-auto space-y-2">
                 {msgs.map((m, i) => (
                   <div key={i} className={`max-w-xs p-2 rounded ${m.from==='brand'?'ml-auto bg-primary-600 text-white':'bg-gray-100 text-gray-900'}`}>
-                    <div className="text-xs text-white/70">{new Date(m.ts).toLocaleTimeString()}</div>
+                    <div className="text-xs opacity-70">{new Date(m.ts).toLocaleTimeString()}</div>
                     <div>{m.text}</div>
                   </div>
                 ))}

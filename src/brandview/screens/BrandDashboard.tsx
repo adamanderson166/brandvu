@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 type Candidate = {
   id: string;
@@ -34,20 +34,20 @@ const BrandDashboard: React.FC = () => {
 
   const allNiches = ['wellness','beauty','fitness','music','food','tech','fashion','gaming','travel','education'];
 
-  const score = (c: Candidate): number => {
+  const score = useCallback((c: Candidate): number => {
     const overlap = nichesDesired.length === 0 ? 1 : c.niches.filter(n => nichesDesired.includes(n)).length / nichesDesired.length;
     let s = Math.round(0.6 * c.engagement + 40 * overlap);
     if (c.followers < minFollowers) s -= 25;
     if (c.engagement < minEngagement) s -= 25;
     return Math.max(0, Math.min(100, s));
-  };
+  }, [nichesDesired, minFollowers, minEngagement]);
 
   const candidates = useMemo(() => {
     return sampleCandidates
       .map(c => ({ ...c, match: score(c) }))
       .filter(c => c.followers >= minFollowers && c.engagement >= minEngagement)
-      .sort((a,b) => b.match - a.match);
-  }, [minFollowers, minEngagement, nichesDesired]);
+      .sort((a,b) => (b as any).match - (a as any).match);
+  }, [minFollowers, minEngagement, score]);
 
   const toggleNiche = (n: string) => {
     setNichesDesired((prev) => prev.includes(n) ? prev.filter(x=>x!==n) : [...prev, n]);
