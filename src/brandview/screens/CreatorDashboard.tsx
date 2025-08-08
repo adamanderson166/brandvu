@@ -1,34 +1,46 @@
 import React, { useEffect, useState } from 'react';
+import { addSnapshot, getSnapshots, Snapshot } from '../utils/storage';
+import { generateSnapshot } from '../utils/mock';
 
 const COOLDOWN_SECONDS = 60 * 2; // 2 minutes
 const TTL_SECONDS = 60 * 60; // 1 hour
+const PLATFORMS = ['Instagram','TikTok','YouTube','Spotify'];
 
 const CreatorDashboard: React.FC = () => {
+  const creatorId = 'influencer-1';
   const [lastSync, setLastSync] = useState<number>(() => Date.now() - 12 * 60 * 1000);
   const [cooldownLeft, setCooldownLeft] = useState<number>(0);
+  const [byPlatform, setByPlatform] = useState<Record<string, Snapshot[]>>({});
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setCooldownLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+    const t = setInterval(() => setCooldownLeft((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const map: Record<string, Snapshot[]> = {};
+    PLATFORMS.forEach(p => { map[p] = getSnapshots(creatorId, p); });
+    setByPlatform(map);
   }, []);
 
   const refresh = async () => {
     if (cooldownLeft > 0) return;
-    // Simulate fetch delay
     setCooldownLeft(COOLDOWN_SECONDS);
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 500));
+    // Generate and store a new snapshot per platform
+    PLATFORMS.forEach(p => {
+      const snap = generateSnapshot(creatorId, p, Date.now());
+      addSnapshot(creatorId, p, snap);
+    });
+    // Reload
+    const map: Record<string, Snapshot[]> = {};
+    PLATFORMS.forEach(p => { map[p] = getSnapshots(creatorId, p); });
+    setByPlatform(map);
     setLastSync(Date.now());
   };
 
   const ttlLeft = Math.max(0, TTL_SECONDS - Math.floor((Date.now() - lastSync) / 1000));
-
-  const fmt = (s: number) => {
-    const m = Math.floor(s / 60);
-    const ss = s % 60;
-    return m > 0 ? `${m}m ${ss}s` : `${ss}s`;
-  };
+  const fmt = (s: number) => { const m = Math.floor(s / 60); const ss = s % 60; return m > 0 ? `${m}m ${ss}s` : `${ss}s`; };
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -54,22 +66,34 @@ const CreatorDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
-        {[
-          { label: 'Followers', value: '12,450' },
-          { label: 'Avg Likes', value: '420' },
-          { label: 'Avg Comments', value: '38' },
-          { label: 'Avg Shares', value: '17' },
-          { label: 'Posts (30d)', value: '22' },
-          { label: 'Engagement', value: '4.1%' },
-        ].map((m) => (
-          <div key={m.label} className="card p-4">
-            <div className="text-gray-600 text-sm mb-1">{m.label}</div>
-            <div className="text-xl font-semibold">{m.value} <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs align-middle">Sample</span></div>
-          </div>
-        ))}
+      {/* Per-platform tiles with tiny trend */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {PLATFORMS.map(p => {
+          const snaps = byPlatform[p] || [];
+          const latest = snaps[snaps.length - 1];
+          return (
+            <div key={p} className="card p-4">
+              <div className="font-semibold mb-1">{p}</div>
+              {latest ? (
+                <div>
+                  <div className="text-sm text-gray-600">Followers</div>
+                  <div className="text-xl font-bold">{latest.followers.toLocaleString()} <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs align-middle">Sample</span></div>
+                  <div className="mt-3 text-xs text-gray-500">30d trend (followers)</div>
+                  <div className="mt-1 h-10 bg-gray-100 rounded flex items-end gap-1 p-1">
+                    {snaps.slice(-12).map((s, i) => (
+                      <div key={i} className="flex-1 bg-primary-600 rounded" style={{ height: `${Math.max(5, Math.min(100, Math.round((s.followers / (latest.followers || 1)) * 100)))}%` }} />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-gray-600">No data yet. Refresh to generate sample metrics.</div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
+      {/* Overall optimization, suggestions, learn teaser remain below */}
       <div className="card p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="font-semibold">Optimization score</div>
