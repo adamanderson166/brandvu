@@ -131,7 +131,6 @@ function App() {
             } 
           />
 
-          {/* BrandView routes under feature flag and auth */}
           {user && brandViewRoutes.map((r) => (
             <Route
               key={r.path}
@@ -139,15 +138,12 @@ function App() {
               element={
                 <>
                   <Navigation user={user} onLogout={handleLogout} />
-                  <React.Suspense fallback={<div className="p-6">Loading…</div>}>
-                    {r.element}
-                  </React.Suspense>
+                  {r.element}
                 </>
               }
             />
           ))}
 
-          {/* Fallback */}
           <Route path="*" element={<Navigate to={user ? '/dashboard' : '/'} replace />} />
         </Routes>
       </AnimatePresence>

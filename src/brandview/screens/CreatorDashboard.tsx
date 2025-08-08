@@ -1,7 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+const COOLDOWN_SECONDS = 60 * 2; // 2 minutes
+const TTL_SECONDS = 60 * 60; // 1 hour
 
 const CreatorDashboard: React.FC = () => {
-  const lastSync = '12 min ago';
+  const [lastSync, setLastSync] = useState<number>(() => Date.now() - 12 * 60 * 1000);
+  const [cooldownLeft, setCooldownLeft] = useState<number>(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCooldownLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const refresh = async () => {
+    if (cooldownLeft > 0) return;
+    // Simulate fetch delay
+    setCooldownLeft(COOLDOWN_SECONDS);
+    await new Promise((r) => setTimeout(r, 800));
+    setLastSync(Date.now());
+  };
+
+  const ttlLeft = Math.max(0, TTL_SECONDS - Math.floor((Date.now() - lastSync) / 1000));
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const ss = s % 60;
+    return m > 0 ? `${m}m ${ss}s` : `${ss}s`;
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
@@ -14,8 +42,16 @@ const CreatorDashboard: React.FC = () => {
           <div className="font-semibold">Test Influencer</div>
           <div className="text-sm text-gray-600">niches: fitness, wellness</div>
         </div>
-        <div className="text-sm text-gray-500">Last sync: {lastSync} <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Sample</span></div>
-        <button className="btn-secondary">Connect more platforms</button>
+        <div className="text-sm text-gray-500">
+          Last sync: {Math.floor((Date.now() - lastSync) / 60000)} min ago
+          <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Sample</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="btn-secondary" onClick={refresh} disabled={cooldownLeft > 0}>
+            {cooldownLeft > 0 ? `Refresh in ${fmt(cooldownLeft)}` : 'Refresh metrics'}
+          </button>
+          <span className="text-xs text-gray-500">TTL: {fmt(ttlLeft)}</span>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">

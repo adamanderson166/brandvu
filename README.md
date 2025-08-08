@@ -209,3 +209,36 @@ For support and questions, please contact the development team or create an issu
 ---
 
 **BrandVu** - Connecting brands with perfect influencers through intelligent matching and analytics. 
+
+## BrandView Integration Guide (MVP)
+
+Flags (create `.env`):
+```
+REACT_APP_BRANDVIEW_MVP=true
+REACT_APP_BRANDVIEW_MOCK_MODE=true
+# Optional per-connector toggles
+REACT_APP_INSTAGRAM_ENABLE=true
+REACT_APP_TIKTOK_ENABLE=true
+REACT_APP_YOUTUBE_ENABLE=true
+REACT_APP_SPOTIFY_ENABLE=true
+REACT_APP_SNAPCHAT_ENABLE=false
+```
+
+Behavior:
+- When `REACT_APP_BRANDVIEW_MVP=false`, no BrandView nav or routes are mounted.
+- When `true`, BrandView appears and uses mock/sample data if keys are missing.
+
+Routes:
+- `/brandview` (Overview)
+- `/brandview/onboarding` (role-based wizard)
+- `/brandview/dashboard/creator`
+- `/brandview/dashboard/brand`
+- `/brandview/matches`
+- `/brandview/learn`
+
+Guards:
+- Users without a BrandView role are redirected to onboarding when opening BrandView dashboards.
+- Creator vs Brand dashboards auto-redirect based on selected role.
+
+Mock data labeling:
+- Any synthetic metric is labeled with a small “Sample” badge. 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 type Candidate = {
   id: string;
@@ -10,6 +10,8 @@ type Candidate = {
   rationale: string;
 };
 
+type ShortlistEntry = { id: string; note: string; addedAt: number };
+
 const sampleCandidates: Candidate[] = [
   { id: 'c1', name: 'Alex Rivera', niches: ['fitness','wellness'], followers: 12450, engagement: 62, rationale: 'Strong consistency, wellness overlap' },
   { id: 'c2', name: 'Mia Chen', niches: ['beauty','fashion'], followers: 50320, engagement: 71, rationale: 'High avg likes, fashion overlap' },
@@ -20,7 +22,15 @@ const BrandDashboard: React.FC = () => {
   const [minFollowers, setMinFollowers] = useState(0);
   const [minEngagement, setMinEngagement] = useState(0);
   const [nichesDesired, setNichesDesired] = useState<string[]>([]);
-  const [shortlist, setShortlist] = useState<string[]>([]);
+  const [shortlist, setShortlist] = useState<ShortlistEntry[]>(() => {
+    const s: any = (window as any).BrandViewSession;
+    return s?.shortlist || [];
+  });
+
+  useEffect(() => {
+    const s: any = (window as any).BrandViewSession || ((window as any).BrandViewSession = {});
+    s.shortlist = shortlist;
+  }, [shortlist]);
 
   const allNiches = ['wellness','beauty','fitness','music','food','tech','fashion','gaming','travel','education'];
 
@@ -44,12 +54,18 @@ const BrandDashboard: React.FC = () => {
   };
 
   const addToShortlist = (id: string) => {
-    setShortlist((s) => (s.includes(id) ? s : [...s, id]));
+    setShortlist((s) => (s.find(e=>e.id===id) ? s : [...s, { id, note: '', addedAt: Date.now() }]));
   };
 
   const removeFromShortlist = (id: string) => {
-    setShortlist((s) => s.filter(x => x !== id));
+    setShortlist((s) => s.filter(x => x.id !== id));
   };
+
+  const updateNote = (id: string, note: string) => {
+    setShortlist((s) => s.map(e => e.id===id ? { ...e, note } : e));
+  };
+
+  const getById = (id: string) => candidates.find(x => x.id === id) || sampleCandidates.find(x=>x.id===id)!;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -95,7 +111,7 @@ const BrandDashboard: React.FC = () => {
                   <div className="text-sm text-gray-500">{c.rationale}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold">{c.match}</div>
+                  <div className="text-2xl font-bold">{(c as any).match}</div>
                   <div className="text-xs text-gray-500">match score</div>
                   <div className="mt-2">
                     <button className="btn-primary" onClick={()=>addToShortlist(c.id)}>Accept</button>
@@ -109,20 +125,24 @@ const BrandDashboard: React.FC = () => {
         <div className="space-y-3">
           <div className="font-semibold">Shortlist</div>
           {shortlist.length === 0 && <div className="card p-4 text-sm text-gray-600">No creators shortlisted yet.</div>}
-          {shortlist.map(id => {
-            const c = candidates.find(x => x.id === id) || sampleCandidates.find(x=>x.id===id)!;
+          {shortlist.map(entry => {
+            const c = getById(entry.id);
             return (
-              <div key={id} className="card p-3">
+              <div key={entry.id} className="card p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">{c.name}</div>
-                    <div className="text-xs text-gray-500">added just now</div>
+                    <div className="text-xs text-gray-500">added {new Date(entry.addedAt).toLocaleString()}</div>
                   </div>
                   <div>
-                    <button className="btn-secondary" onClick={()=>removeFromShortlist(id)}>Remove</button>
+                    <button className="btn-secondary" onClick={()=>removeFromShortlist(entry.id)}>Remove</button>
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-gray-500">Chat (prototype only — messaging not yet live)</div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Notes</label>
+                  <textarea className="input-field h-20" value={entry.note} onChange={e=>updateNote(entry.id, e.target.value)} placeholder="Add context or next steps" />
+                </div>
+                <div className="text-xs text-gray-500">Chat (prototype only — messaging not yet live)</div>
               </div>
             );
           })}

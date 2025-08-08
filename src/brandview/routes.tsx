@@ -2,13 +2,13 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { flags } from '../config/flags';
 
-// Lazy-loadable component placeholders. Implemented in MVP using mock data
-const BrandViewOverview = React.lazy(() => import('./screens/Overview'));
-const BrandViewOnboarding = React.lazy(() => import('./screens/Onboarding'));
-const CreatorDashboard = React.lazy(() => import('./screens/CreatorDashboard'));
-const BrandDashboard = React.lazy(() => import('./screens/BrandDashboard'));
-const Matches = React.lazy(() => import('./screens/Matches'));
-const Learn = React.lazy(() => import('./screens/Learn'));
+import BrandViewOverview from './screens/Overview';
+import BrandViewOnboarding from './screens/Onboarding';
+import CreatorDashboard from './screens/CreatorDashboard';
+import BrandDashboard from './screens/BrandDashboard';
+import Matches from './screens/Matches';
+import Learn from './screens/Learn';
+import { RoleGuard } from './guards';
 
 export const brandViewRoutes = [
   {
@@ -21,18 +21,26 @@ export const brandViewRoutes = [
   },
   {
     path: '/brandview/dashboard/creator',
-    element: flags.BRANDVIEW_MVP ? <CreatorDashboard /> : <Navigate to="/" replace />,
+    element: flags.BRANDVIEW_MVP ? (
+      <RoleGuard required="creator"><CreatorDashboard /></RoleGuard>
+    ) : <Navigate to="/" replace />,
   },
   {
     path: '/brandview/dashboard/brand',
-    element: flags.BRANDVIEW_MVP ? <BrandDashboard /> : <Navigate to="/" replace />,
+    element: flags.BRANDVIEW_MVP ? (
+      <RoleGuard required="brand"><BrandDashboard /></RoleGuard>
+    ) : <Navigate to="/" replace />,
   },
   {
     path: '/brandview/matches',
-    element: flags.BRANDVIEW_MVP ? <Matches /> : <Navigate to="/" replace />,
+    element: flags.BRANDVIEW_MVP ? (
+      <RoleGuard><Matches /></RoleGuard>
+    ) : <Navigate to="/" replace />,
   },
   {
     path: '/brandview/learn',
-    element: flags.BRANDVIEW_MVP ? <Learn /> : <Navigate to="/" replace />,
+    element: flags.BRANDVIEW_MVP ? (
+      <RoleGuard><Learn /></RoleGuard>
+    ) : <Navigate to="/" replace />,
   },
 ];
