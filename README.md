@@ -242,3 +242,6 @@ Guards:
 
 Mock data labeling:
 - Any synthetic metric is labeled with a small “Sample” badge. 
+
+## Executive Overview
+See the executive summary of BrandView MVP integration in `docs/EXEC_OVERVIEW.md`. 
