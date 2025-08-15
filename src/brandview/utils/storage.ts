@@ -62,3 +62,4 @@ export function getCampaigns(): Campaign[] {
 export function setCampaigns(campaigns: Campaign[]): void {
   write('campaigns', campaigns);
 }
+

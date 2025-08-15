@@ -192,3 +192,4 @@ const SocialAdd: React.FC<{ platform: string; example: string; onAdd: (p: string
 };
 
 export default Onboarding;
+

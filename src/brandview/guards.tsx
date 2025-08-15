@@ -25,3 +25,4 @@ export const RoleGuard: React.FC<{ required?: BVRole; children: React.ReactNode 
 
   return <>{children}</>;
 };
+

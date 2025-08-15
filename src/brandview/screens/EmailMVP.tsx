@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { flags } from '../config/flags';
+import { flags } from '../../config/flags';
 import { Contact, Campaign, getContacts, setContacts, getCampaigns, setCampaigns } from '../utils/storage';
 
 const EmailMVP: React.FC = () => {
@@ -113,3 +113,4 @@ const EmailMVP: React.FC = () => {
 };
 
 export default EmailMVP;
+
