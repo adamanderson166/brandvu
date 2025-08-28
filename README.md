@@ -1,6 +1,6 @@
 # BrandVu - Brand-Influencer Matching Platform
 
-A modern, award-winning front-end application that revolutionizes how brands discover and collaborate with influencers. Built with React, TypeScript, and Tailwind CSS, featuring an addictive swipe interface similar to dating apps but designed for professional brand-influencer partnerships.
+A modern, great award-winning front-end application that revolutionizes how brands discover and collaborate with influencers. Built with React, TypeScript, and Tailwind CSS, featuring an addictive swipe interface similar to dating apps but designed for professional brand-influencer partnerships.
 
 ## 🚀 Features
 
