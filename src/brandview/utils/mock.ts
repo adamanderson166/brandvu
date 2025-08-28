@@ -23,3 +23,4 @@ export function generateSnapshot(seed: string, platform: string, ts: number = Da
   return { ts, platform, followers, posts, avgLikes, avgComments, avgShares, engagement };
 }
 
+
